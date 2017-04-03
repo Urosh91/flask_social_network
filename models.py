@@ -36,3 +36,10 @@ class User(UserMixin, Model):
         except IntegrityError:
             # IntegrityError will happen if username or email are not unique, as unique was set to True
             raise ValueError('User already exists')
+
+
+def initialize():
+    db.connect()
+    db.create_tables([User], safe=True)
+    # safe=True checks if table exists before creating it
+    db.close()
