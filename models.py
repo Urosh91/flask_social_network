@@ -1,5 +1,6 @@
 import datetime
 
+from flask_bcrypt import generate_password_hash, check_password_hash
 from peewee import *
 from flask_login import UserMixin
 
@@ -21,3 +22,17 @@ class User(UserMixin, Model):
         database = db
         order_by = ('-joined_at',)
         # desc order, tuple
+
+    # classmethod describes a method (that belongs to a class) that can create a the class it belongs to
+    @classmethod
+    def create_user(cls, username, email, password, admin=False):
+        try:
+            cls.create(
+                username = username,
+                email = email,
+                password = generate_password_hash(password),
+                is_admin = admin,
+            )
+        except IntegrityError:
+            # IntegrityError will happen if username or email are not unique, as unique was set to True
+            raise ValueError('User already exists')
